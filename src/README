@@ -1,0 +1,56 @@
+=====================  Compile  =====================
+
+To compile vs_send & vs_recv, use the command "make".
+
+=====================  Run vs_send  =====================
+
+vs_send [-d] host1:port1 [host2:port2 ...] file1 [file2 ...] 
+
+=====================  Run vs_recv  =====================
+
+vs_recv [-d] port 
+
+=======================  RUDP API  =======================
+
+- create a RUDP socket: rudp_socket_t rudp_socket(int port); 
+	Create a RUDP socket and Bind it to the specified port. Return a  identifier to the socket.
+	- if port < 0  return NULL
+	- if port = 0 a random port is use.
+	- return NULL is the creation fail.
+
+- close a RUDP socket: int rudp_close(rudp_socket_t rsocket); 
+	Close a RUDP socket. the handler choose with the function rudp_event_handler will be call with the parameter: RUDP_EVENT_CLOSED
+
+- choose a handler for receive data: int rudp_recvfrom_handler(rudp_socket_t rsocket, int (*handler)(rudp_socket_t, char *, int, struct sockaddr_in *)); 
+
+- Send a data using RUDP socket : int rudp_sendto(rudp_socket_t rsocket, void* data, int len, struct sockaddr_in* to); 
+
+- Choose handler for timeout and close: int rudp_event_handler(rudp_socket_t rsocket, int (*handler)(rudp_socket_t, rudp_event, struct sockaddr_in *)); 
+
+=======================  DROP Packet  =======================
+To drop packet you can use the DROP constant define in rudp.h.
+It will drop all packet (ACK,data,fin,syn) according to the macro:
+
+	if (DROP!= 0 && rand() % DROP == 1){
+		return 0;
+	}		
+	else 
+		return sendto(sockfd,buf,len,flags,dest_addr,addrlen);
+
+
+===================== libraries ====================
+
+        unistd.h
+        stdio.h
+        stdlib.h
+        string.h
+        ctype.h
+        netdb.h
+        fcntl.h
+        sys/types.h
+        sys/time.h
+        sys/file.h
+        sys/socket.h
+        netinet/in.h
+        arpa/inet.h
+        time.h
